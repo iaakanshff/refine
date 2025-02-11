@@ -18,7 +18,9 @@ func HandleFile(fn string, stdinMap map[string]struct{}, toBeCreated bool) (int,
 
 	// Checking if the file need to be created
 	// Ex: cat file.txt | refine file.txt
-	if toBeCreated {
+	// Otherwise check if it exists
+	// Ex: refine file.txt
+	if toBeCreated || !os.IsNotExist(err) {
 
 		// File doesn't exist, create it
 		// File exists, open with read and write permissions
@@ -26,21 +28,8 @@ func HandleFile(fn string, stdinMap map[string]struct{}, toBeCreated bool) (int,
 		if err != nil {
 			return 0, 0, fmt.Errorf("%s Error opening file: %w", common.Errfix, err)
 		}
-		defer f.Close()
-
-		// Otherwise check if it exists or not
-		// Ex: refine file.txt
 	} else {
-		if os.IsNotExist(err) {
-			return 0, 0, fmt.Errorf("%s Provided file '%s' doesn't exist: %w", common.Errfix, fn, err)
-		} else {
-			// File exists, open with read and write permissions
-			f, err = utils.OpenOrCreateFile(fn, true)
-			if err != nil {
-				return 0, 0, fmt.Errorf("%s Error opening file: %w", common.Errfix, err)
-			}
-			defer f.Close()
-		}
+		return 0, 0, fmt.Errorf("%s Provided file '%s' doesn't exist: %w", common.Errfix, fn, err)
 	}
 
 	fileMap := make(map[string]struct{})
@@ -49,8 +38,9 @@ func HandleFile(fn string, stdinMap map[string]struct{}, toBeCreated bool) (int,
 	if err != nil {
 		return 0, 0, err
 	}
-
-	f, err = utils.OpenAndTruncate(f)
+	
+	f.Close()
+	f, err = utils.OpenAndTruncate(fn)
 	if err != nil {
 		return 0, 0, fmt.Errorf("%s Error truncating file: %w", common.Errfix, err)
 	}
@@ -74,6 +64,7 @@ func HandleMultipleFiles(fn1, fn2 string) (int, int, error) {
 	}
 	defer f1.Close()
 
+
 	fileMap := make(map[string]struct{})
 	totalLinesCount, err := utils.ReadLinesFromFileAndStdin(f1, fileMap, nil)
 	if err != nil {
@@ -85,14 +76,15 @@ func HandleMultipleFiles(fn1, fn2 string) (int, int, error) {
 	if err != nil {
 		return 0, 0, fmt.Errorf("%s Error opening file: %w", common.Errfix, err)
 	}
-	defer f2.Close()
 
 	tempLinesCount, err := utils.ReadLinesFromFileAndStdin(f2, fileMap, nil)
+	f2.Close()
 	if err != nil {
 		return 0, 0, err
 	}
-
-	f2, err = utils.OpenAndTruncate(f2)
+	
+	// Here we open it again cause truncate() doesn't work on windows
+	f2, err = utils.OpenAndTruncate(fn2)
 	if err != nil {
 		return 0, 0, fmt.Errorf("%s Error truncating file: %w", common.Errfix, err)
 	}

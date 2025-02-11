@@ -86,6 +86,6 @@ func ReadLinesFromFileAndStdin(fn *os.File, targetMap map[string]struct{}, stdin
 	return totalLinesCount, nil
 }
 
-func OpenAndTruncate(f *os.File) (*os.File, error) {
-	return os.OpenFile(f.Name(), os.O_RDWR|os.O_TRUNC, 0644)
+func OpenAndTruncate(f string) (*os.File, error) {
+	return os.OpenFile(f, os.O_RDWR|os.O_TRUNC, 0644)
 }
