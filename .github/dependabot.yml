@@ -1,0 +1,26 @@
+version: 2
+updates:
+  # Keep the Go module's (currently zero) dependencies current.
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - go
+
+  # Keep the GitHub Actions used in .github/workflows current.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - github-actions
+    # Group all action bumps into a single PR to avoid notification spam.
+    groups:
+      actions:
+        patterns:
+          - "*"

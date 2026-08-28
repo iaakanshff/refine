@@ -1,0 +1,34 @@
+# golangci-lint configuration (schema v2, for golangci-lint >= 2.0).
+# Run `make lint` (or `golangci-lint run ./...`) to check the whole tree.
+version: "2"
+
+run:
+  # Fail fast enough for CI but allow the (rare) full tree scan on large machines.
+  timeout: 5m
+  # Lint test files too — they ship with the module and deserve the same bar.
+  tests: true
+
+linters:
+  # The "standard" preset is enabled by default; we add a few more correctness linters
+  # that are cheap and catch real issues.
+  default: standard
+  enable:
+    - misspell      # typos in comments/strings
+    - bodyclose     # unchecked resp.Body.Close in HTTP clients
+    - unconvert     # redundant type conversions
+
+formatters:
+  # Formatting is enforced as part of the lint run so `make lint` covers style too.
+  enable:
+    - gofmt         # formatting drift
+    - goimports     # import grouping/ordering
+
+issues:
+  # Report every finding rather than collapsing duplicates.
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  # Don't fail the build for pre-existing patterns in generated code.
+  exclude-rules:
+    - path: \.gen\.go$
+      linters:
+        - all

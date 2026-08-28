@@ -1,0 +1,57 @@
+# GoReleaser configuration (schema v1, for GoReleaser >= 1.x).
+# Builds cross-compiled binaries for the release and publishes them to GitHub Releases.
+# Run locally with `goreleaser release --snapshot --clean` (needs no tag); CI uses the
+# release workflow on pushed tags.
+project_name: refine
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: refine
+    main: ./cmd/refine
+    binary: refine
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+
+archives:
+  - id: refine
+    builds:
+      - refine
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  github:
+    owner: yourpwnguy
+    name: refine
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+source:
+  enabled: false
