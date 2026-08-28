@@ -34,24 +34,32 @@ cp ~/go/bin/refine /usr/local/bin/
 
 ## Usage 📘
 ```yaml
-Usage: refine [options]
+refine - fast line deduplication and sorting
 
-Options: [flag] [argument] [Description]
+Usage:
+  refine [options] <file>                 dedupe & sort a file in place
+  refine [options] <in> <out>            if out exists: merge in+out into out;
+                                         otherwise: dedupe in, write result to out
+  refine -o <out> <in>                   dedupe in, write result to out
+  cat <file> | refine [options]           dedupe stdin, print to stdout
+  cat <file> | refine [options] <out>    dedupe stdin, write to out
+  refine -w <dir> [-e a,b]               dedupe & sort every file in dir
 
-DIRECT:
-  refine file.txt                       (Read and write to the same file)
-  refine file1.txt file2.txt            (Read from file1 and write to the file2)
+Options:
+  -w, --wildcard <dir>        process every regular file in a directory
+  -e, --exclude <a,b>         comma-separated base names to skip (with -w)
+  -o, --output <file>         write output to this file (overrides default)
+  -t, --trim-space            strip leading/trailing whitespace from lines
+      --workers <n>           parallelism for sorting (default: all cores)
+      --json                  emit machine-readable stats on stderr
+      --no-color              disable colored output
+  -q, --quiet                 disable the live progress display
+  -v, --version               print version and exit
+  -h, --help                  show this help and exit
 
-STDIN:
-  cat file.txt | refine                 (Read from stdin and display to stdout)
-  cat file.txt | refine newfile.txt     (Read from stdin and write to a specific file)
-
-FEATURES: (ONLY DIRECT MODE)
-  refine -w, --wildcard                 (Sort all files in the directory)
-  refine -we, --wildcard-exception      (Specify files to be skipped while using wildcard)
-
-DEBUG:
-  refine -v, --version                  (Check current version)
+Notes:
+  Files are rewritten atomically, so an interrupted run never corrupts the
+  original. Lines are compared verbatim; use -t to normalize whitespace.
 ```
 
 ### DIRECT MODE:
