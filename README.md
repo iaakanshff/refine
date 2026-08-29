@@ -28,7 +28,7 @@ Meet `refine`, a powerful and user-friendly tool for the process of removing dup
 ## Installation 🛠️
 To install the refine tool, you can simply use the following command.
 ````bash
-go install -v "github.com/yourpwnguy/refine/cmd/refine@latest"
+go install -v "github.com/yourpwnguy/refine/cmd/refine@v0.2.0"
 cp ~/go/bin/refine /usr/local/bin/
 ````
 

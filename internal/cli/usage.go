@@ -5,6 +5,10 @@ import (
 	"os"
 )
 
+// version is stamped into the binary at build time via ldflags so
+// `refine -v` reports the exact version without recompiling.
+var version string
+
 // usage is the help text printed for -h/--help and on flag errors. It documents every mode and
 // flag in one place so users never have to guess the invocation.
 const usage = `refine - fast line deduplication and sorting
@@ -39,4 +43,4 @@ Notes:
 func PrintHelp() { fmt.Fprint(os.Stderr, usage) }
 
 // PrintVersion prints the version line.
-func PrintVersion() { fmt.Fprintln(os.Stderr, "refine v0.2.0") }
+func PrintVersion() { fmt.Fprintln(os.Stderr, "refine "+version) }
