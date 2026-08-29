@@ -27,8 +27,3 @@ issues:
   # Report every finding rather than collapsing duplicates.
   max-issues-per-linter: 0
   max-same-issues: 0
-  # Don't fail the build for pre-existing patterns in generated code.
-  exclude-rules:
-    - path: \.gen\.go$
-      linters:
-        - all
